@@ -1,27 +1,28 @@
-#comment 1
+strategy:
+  matrix:
+    linux:
+      imageName: 'ubuntu-16.04'
+    mac:
+      imageName: 'macos-10.13'
+    windows:
+      imageName: 'vs2017-win2016'
+
+pool:
+  vmImage: $(imageName)
+
 steps:
-- task: DotNetCoreInstaller@0
-  displayName: 'Use .NET Core sdk 2.1.402'
-  inputs:
-    version: 2.1.402
-
-- task: DotNetCoreCLI@2
-  displayName: Restore
-  inputs:
-    command: restore
-
-    projects: '$(buildProjects)'
-
+- script: dotnet restore
 
 - task: DotNetCoreCLI@2
   displayName: Build
   inputs:
-    projects: '$(buildProjects)'
+    command: 'build'
+    projects: '**/*.csproj'
+    arguments: '--configuration Release'
 
-    arguments: '--configuration $(BuildConfiguration)'
 
 - task: VSTest@2
-  displayName: 'Unit tests'
+  displayName: 'Run Unit tests'
   inputs:
     testAssemblyVer2: |
      **\*Test*.dll
@@ -32,12 +33,12 @@ steps:
 
     platform: '$(BuildPlatform)'
 
-    configuration: '$(BuildConfiguration)'
+    configuration: 'Release'
 
     rerunFailedTests: true
     
 - task: VSTest@2
-  displayName: 'Integration tests'
+  displayName: 'Run Integration tests'
   inputs:
     testAssemblyVer2: |
      **\*Integration.Test*.dll
@@ -47,24 +48,7 @@ steps:
 
     platform: '$(BuildPlatform)'
 
-    configuration: '$(BuildConfiguration)'
+    configuration: 'Release'
 
     rerunFailedTests: true
 
-
-- task: DotNetCoreCLI@2
-  displayName: Publish
-  inputs:
-    command: publish
-
-    publishWebProjects: True
-
-    arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
-
-    zipAfterPublish: True
-
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact'
-  inputs:
-    PathtoPublish: '$(build.artifactstagingdirectory)'

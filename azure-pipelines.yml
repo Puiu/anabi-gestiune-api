@@ -20,35 +20,8 @@ steps:
     projects: '**/*.csproj'
     arguments: '--configuration Release'
 
-
-- task: VSTest@2
-  displayName: 'Run Unit tests'
+- script: dotnet test **/*test*/*.csproj --logger trx --collect "Code coverage"
+- task: PublishTestResults@2
   inputs:
-    testAssemblyVer2: |
-     **\*Test*.dll
-     !**\*Integration.Test*.dll
-     !**\*TestAdapter.dll
-     !**\obj\**
-    otherConsoleOptions: '/Framework:".NETCoreApp,Version=v2.1" /Blame '
-
-    platform: '$(BuildPlatform)'
-
-    configuration: 'Release'
-
-    rerunFailedTests: true
-    
-- task: VSTest@2
-  displayName: 'Run Integration tests'
-  inputs:
-    testAssemblyVer2: |
-     **\*Integration.Test*.dll
-     !**\*TestAdapter.dll
-     !**\obj\**
-    otherConsoleOptions: '/Framework:".NETCoreApp,Version=v2.1" /Blame '
-
-    platform: '$(BuildPlatform)'
-
-    configuration: 'Release'
-
-    rerunFailedTests: true
-
+    testRunner: VSTest
+    testResultsFiles: '**/*.trx'

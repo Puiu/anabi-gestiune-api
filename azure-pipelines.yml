@@ -11,7 +11,8 @@ pool:
   vmImage: $(imageName)
 
 steps:
-- script: dotnet restore
+- script: dotnet restore 
+  displayName: Restore
 
 - task: DotNetCoreCLI@2
   displayName: Build
@@ -20,8 +21,11 @@ steps:
     projects: '**/*.csproj'
     arguments: '--configuration Release'
 
-- script: dotnet test **/*test*/*.csproj --logger trx --collect "Code coverage"
+- script: dotnet test **/*.csproj --logger trx --collect "Code coverage"
+  displayName: Run tests
+  
 - task: PublishTestResults@2
+  displayName: Publish test results
   inputs:
     testRunner: VSTest
     testResultsFiles: '**/*.trx'

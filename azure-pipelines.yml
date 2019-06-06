@@ -19,7 +19,7 @@ steps:
     projects: '**/*.csproj'
     arguments: '--configuration Release'
 
-- script: dotnet test **/*.csproj --logger trx --collect "Code coverage"
+- script: dotnet test **/*test*.csproj --logger trx --collect "Code coverage"
   displayName: Run tests
 
 - task: PublishTestResults@2

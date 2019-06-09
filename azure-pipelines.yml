@@ -19,7 +19,7 @@ steps:
     projects: '**/*.csproj'
     arguments: '--configuration Release'
 
-- script: dotnet test Anabi.Integration.Tests/*.csproj --logger trx --collect "Code coverage"
+- script: dotnet test *Tests/*.csproj --logger trx --collect "Code coverage"
   displayName: Run tests
 
 - task: PublishTestResults@2

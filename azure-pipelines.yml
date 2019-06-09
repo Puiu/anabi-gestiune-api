@@ -1,12 +1,17 @@
+variables:
+  windowsImage: 'vs2017-win2016'
+  linuxImage: 'ubuntu-16.04'
+
 strategy:
   matrix:
     linux:
-      imageName: 'ubuntu-16.04'
+      imageName: linuxImage
     windows:
-      imageName: 'vs2017-win2016'
+      imageName: windowsImage
 
 pool:
   vmImage: $(imageName)
+
 
 steps:
 - script: dotnet restore 
@@ -19,8 +24,13 @@ steps:
     projects: '**/*.csproj'
     arguments: '--configuration Release'
 
-- script: dotnet test *Tests/*.csproj --logger trx --collect "Code coverage"
+- script: |
+    dotnet test Anabi.Integration.Tests/*.csproj --logger trx --collect "Code coverage"
+    dotnet test Anabi.Domain.Tests/*.csproj --logger trx --collect "Code coverage"
+    dotnet test AnabiControllers.Tests/*.csproj --logger trx --collect "Code coverage"
+    dotnet test Anabi.InstitutionsImporter.Tests/*.csproj --logger trx --collect "Code coverage"
   displayName: Run tests
+  condition: eq($(imageName), $(linuxImage))
 
 - task: PublishTestResults@2
   displayName: Publish test results

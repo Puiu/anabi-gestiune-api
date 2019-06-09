@@ -1,0 +1,39 @@
+strategy:
+  matrix:
+    linux:
+      imageName: 'ubuntu-16.04'
+    windows:
+      imageName: 'vs2017-win2016'
+
+pool:
+  vmImage: $(imageName)
+
+variables:
+  windowsImage: 'vs2017-win2016'
+  linuxImage: 'ubuntu-16.04'
+
+
+steps:
+- script: dotnet restore 
+  displayName: Restore
+
+- task: DotNetCoreCLI@2
+  displayName: Build
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    arguments: '--configuration Release'
+
+- script: |
+    dotnet test Anabi.Integration.Tests/*.csproj --logger trx --collect "Code coverage"
+    dotnet test Anabi.Domain.Tests/*.csproj --logger trx --collect "Code coverage"
+    dotnet test AnabiControllers.Tests/*.csproj --logger trx --collect "Code coverage"
+    dotnet test Anabi.InstitutionsImporter.Tests/*.csproj --logger trx --collect "Code coverage"
+  displayName: Run tests
+  condition: eq(pool.vmImage, variables.linuxImage)
+
+- task: PublishTestResults@2
+  displayName: Publish test results
+  inputs:
+    testRunner: VSTest
+    testResultsFiles: '**/*.trx'

@@ -5,9 +5,9 @@ variables:
 strategy:
   matrix:
     linux:
-      imageName: linuxImage
+      imageName: $(linuxImage)
     windows:
-      imageName: windowsImage
+      imageName: $(windowsImage)
 
 pool:
   vmImage: $(imageName)

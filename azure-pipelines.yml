@@ -30,7 +30,7 @@ steps:
     dotnet test AnabiControllers.Tests/*.csproj --logger trx --collect "Code coverage"
     dotnet test Anabi.InstitutionsImporter.Tests/*.csproj --logger trx --collect "Code coverage"
   displayName: Run tests
-  condition: eq($(imageName), $(linuxImage))
+  condition: eq($(imageName), variables.linuxImage)
 
 - task: PublishTestResults@2
   displayName: Publish test results

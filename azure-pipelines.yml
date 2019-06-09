@@ -1,16 +1,16 @@
-variables:
-  windowsImage: 'vs2017-win2016'
-  linuxImage: 'ubuntu-16.04'
-
 strategy:
   matrix:
     linux:
-      imageName: $(linuxImage)
+      imageName: 'ubuntu-16.04'
     windows:
-      imageName: $(windowsImage)
+      imageName: 'vs2017-win2016'
 
 pool:
   vmImage: $(imageName)
+
+variables:
+  windowsImage: 'vs2017-win2016'
+  linuxImage: 'ubuntu-16.04'
 
 
 steps:

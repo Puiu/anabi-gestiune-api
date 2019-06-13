@@ -4,7 +4,7 @@ variables:
   windowsImage: 'vs2017-win2016'
 
 stages:
-- stage: Restore and Build
+- stage: RestoreAndBuild
   jobs:
   - job: BuildJob
     strategy:

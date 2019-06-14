@@ -1,39 +1,39 @@
-strategy:
-  matrix:
-    linux:
-      imageName: 'ubuntu-16.04'
-    windows:
-      imageName: 'vs2017-win2016'
-
-pool:
-  vmImage: $(imageName)
-
+name: $(Date:yyyyMMdd)$(Rev:.r)
 variables:
-  windowsImage: 'vs2017-win2016'
   linuxImage: 'ubuntu-16.04'
+  windowsImage: 'vs2017-win2016'
 
+stages:
+- stage: RestoreAndBuild
+  jobs:
+  - job: BuildJob
+    strategy:
+      matrix:
+        linux:
+          imageName: $(linuxImage)
+        windows:
+          imageName: $(windowsImage)
 
-steps:
-- script: dotnet restore 
-  displayName: Restore
+    pool:
+      vmImage: $(imageName)
 
-- task: DotNetCoreCLI@2
-  displayName: Build
-  inputs:
-    command: 'build'
-    projects: '**/*.csproj'
-    arguments: '--configuration Release'
+    steps:
+    - script: |
+        dotnet restore
+        dotnet build -c Release
 
-- script: |
-    dotnet test Anabi.Integration.Tests/*.csproj --logger trx --collect "Code coverage"
-    dotnet test Anabi.Domain.Tests/*.csproj --logger trx --collect "Code coverage"
-    dotnet test AnabiControllers.Tests/*.csproj --logger trx --collect "Code coverage"
-    dotnet test Anabi.InstitutionsImporter.Tests/*.csproj --logger trx --collect "Code coverage"
-  displayName: Run tests
-  condition: eq(pool.vmImage, variables.linuxImage)
+- stage: Test
+  jobs:
+  - job: TestOnWindows
+    steps:
+    - script: echo Testing on Windows!
+  - job: TestOnLinux
+    steps:
+    - script: echo Testing on Linux!
 
-- task: PublishTestResults@2
-  displayName: Publish test results
-  inputs:
-    testRunner: VSTest
-    testResultsFiles: '**/*.trx'
+- stage: Deploy
+  jobs:
+  - job: Deploy
+    steps:
+    - script: echo Deploying the code!
+    
